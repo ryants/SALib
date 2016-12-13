@@ -68,6 +68,7 @@ def nonuniform_scale_samples(params, bounds, dists):
             where N is the number of samples
         dists-list of distributions, one for each parameter
                 unif: uniform with lower and upper bounds
+                logunif: the base-10 logarithm is uniformly distributed
                 triang: triangular with width (scale) and location of peak
                         location of peak is in percentage of width
                         lower bound assumed to be zero
@@ -99,6 +100,15 @@ def nonuniform_scale_samples(params, bounds, dists):
                     must be less than upper bound''')
             else:
                 conv_params[:,i] = params[:,i] * (b2 - b1) + b1
+
+        elif dists[i] == 'logunif':
+            if b1 >= b2:
+                raise ValueError('''Log-uniform distribution: lower bound
+                    must be less than upper bound''')
+            else:
+                lb1 = np.log10(b1)
+                lb2 = np.log10(b2)
+                conv_params[:,i] = 10**(params[:,i] * (lb2 - lb1) + lb1)
 
         elif dists[i] == 'norm':
             if b2 <= 0:
